@@ -1,4 +1,20 @@
 let row = document.querySelector(".row");
+var form_select = document.querySelector(".form-select");
+let selected;
+
+function get_selected() {
+  form_select.addEventListener("change", async (e) => {
+    selected = e.target.value;
+    console.log(selected);
+    try {
+      await display_fetch(selected);
+    } catch (error) {
+      row.innerHTML = error;
+    }
+  });
+}
+get_selected();
+
 async function fetchApi(parm) {
   try {
     let data = await fetch(
@@ -11,11 +27,14 @@ async function fetchApi(parm) {
     row.innerHTML = "server error";
   }
 }
-(async function () {
+async function display_fetch(parm) {
   spinner();
-  let arr = await fetchApi(`Seafood`);
-  !arr.meals ? (row.innerHTML = "check the internet") : display(arr.meals);
-})();
+  let arr = await fetchApi(`${parm}`);
+  !arr.meals || !arr
+    ? (row.innerHTML = "check the internet")
+    : display(arr.meals);
+}
+display_fetch("pasta");
 function display(arr) {
   var box = "";
   for (let i = 0; i < arr.length; i++) {
@@ -65,7 +84,7 @@ function display(arr) {
   row.innerHTML = box;
 }
 function spinner() {
-  let box = `<div class="spinner-grow" role="status">
+  let box = `<div class="spinner-grow " role="status">
   <span class="visually-hidden">Loading...</span>
 </div>`;
   row.innerHTML = box;
